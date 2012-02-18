@@ -29,6 +29,7 @@
         <li class="item">
           <h4><a href="{{ p.get_absolute_url }}" title="{{ p.name }}">{{ p.name }}</a> ({{ p.upload_date }})</h4>
           <p>{{ p.short_description }}</p>
+          <p><a href="{% url plugin_update p.id %}">Upload an updated version</a></p>
         </li>
       {% empty %}
         <li>Maybe later. This ninja is taking a nap now.</li>

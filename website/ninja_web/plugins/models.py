@@ -22,10 +22,10 @@ class Plugin(models.Model):
     short_description = models.CharField(
                             max_length=100, verbose_name=u'Short Description')
     description = models.TextField(verbose_name=u'Description')
-    upload_date = models.DateField(default=date.today)
+#    upload_date = models.DateField(default=date.today)
     url = models.URLField(verify_exists=True, max_length=200, blank=True)
 
-    zip_file = models.FileField(upload_to='plugin_files/')
+#    zip_file = models.FileField(upload_to='plugin_files/')
 
     tags = TagField()
 
@@ -41,7 +41,7 @@ class Plugin(models.Model):
 
     @property
     def rate(self):
-        """ return the actual average rate rounded 
+        """ return the actual average rate rounded
         """
         if self.vote_set.all().count() == 0:
             # default value for non rated plugins
@@ -59,6 +59,27 @@ class Plugin(models.Model):
     def get_absolute_url(self):
         return ('plugin_detail', (), {'plugin_id': self.id})
 
+    def latest_version(self):
+        """Return the latest uploaded plugin version."""
+        try:
+            download = self.plugindownload_set.all()[0]
+        except IndexError:
+            download = None
+        return download
+
+
+class PluginDownload(models.Model):
+    plugin = models.ForeignKey(Plugin)
+    zip_file = models.FileField(upload_to='plugin_files/')
+    version = models.CharField(max_length=12)
+    changelog = models.TextField(blank=True)
+    upload_date = models.DateField(default=date.today)
+
+    class Meta:
+        ordering = ('-version',)
+
+    def __unicode__(self):
+        return u'%s | %s' % (self.plugin.name, self.version)
 
 
 class Vote(models.Model):

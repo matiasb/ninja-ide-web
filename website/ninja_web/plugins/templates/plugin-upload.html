@@ -8,9 +8,9 @@
   <div class="content">
     <!-- PLUGIN-FORM -->
     <div class="section left big-width" id="plugin-form">
-      <h1>Plugin Submit</h1>
-      <h2>Submit your ninja plugin. Share your stuff!</h2>
-
+      <h1>Plugin Update</h1>
+      <h2>Upload a new version of your {{ plugin.name }} plugin.</h2>
+      <p>Your latest version is {{ plugin.latest_version.version }}.</p>
       <p>There's no need to say you have to complete all the required fields.</p>
 
       {% if form.errors or upload_form.errors %}
@@ -20,10 +20,6 @@
         {% if form.non_field_errors %}
           <p>{{ form.non_field_errors }}</p>
         {% endif %}
-
-        {% if upload_form.non_field_errors %}
-          <p>{{ upload_form.non_field_errors }}</p>
-        {% endif %}
       </div>
       {% endif %}
 
@@ -31,10 +27,6 @@
         {% csrf_token %}
         <table class="styled-table">
           {{ form }}
-          <tr><td colspan="2">
-          <h3>Upload your initial version:</h3>
-          </td></tr>
-          {{ upload_form }}
           <tr>
           <td colspan="2">
             <input type="submit" value="Submit!" />

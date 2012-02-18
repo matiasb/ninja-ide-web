@@ -1,14 +1,18 @@
 # -*- coding: utf-8 *-*
 from django.contrib import admin
 
-from plugins.models import Plugin
+from plugins.models import Plugin, PluginDownload
 from plugins.models import Vote
 
 
+class PluginDownloadInline(admin.TabularInline):
+    model = PluginDownload
+
 class PluginAdmin(admin.ModelAdmin):
-    list_display = ['user', 'name', 'short_description', 'description', 'upload_date', 'url', 'zip_file', 'tags']
-    list_filter = ['user', 'upload_date', 'tags']
-    search_fields = ['user', 'name', 'short_description', 'description', 'upload_date', 'url', 'zip_file', 'tags']
+    list_display = ['user', 'name', 'short_description', 'description', 'url', 'tags']
+    list_filter = ['user', 'tags']
+    search_fields = ['user', 'name', 'short_description', 'description', 'url', 'tags']
+    inlines = [PluginDownloadInline]
 admin.site.register(Plugin, PluginAdmin)
 
 

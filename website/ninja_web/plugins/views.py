@@ -7,11 +7,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import simplejson
 
 from common.utils import render_response
-from plugins.forms import PluginForm
+from plugins.forms import PluginForm, PluginUploadForm
 from plugins.models import Vote, Plugin
 
 
@@ -51,12 +51,17 @@ def plugin_submit(request):
     dict = {}
 
     form = PluginForm(request.POST or None, request.FILES or None)
+    upload = PluginUploadForm(request.POST or None, request.FILES or None)
 
     if request.method == 'POST':
-        if form.is_valid():
+        if form.is_valid() and upload.is_valid():
             new_plugin = form.save(commit=False)
             new_plugin.user = request.user
             new_plugin.save()
+            # save the related uploaded version
+            upload = upload.save(commit=False)
+            upload.plugin = new_plugin
+            upload.save()
             messages.info(request, u'Plugin submitted correctly little dragon.')
 
             return redirect('plugins')
@@ -66,8 +71,36 @@ def plugin_submit(request):
                     u'Something went wrong in your submit. Please, check it.')
 
     dict['form'] = form
+    dict['upload_form'] = upload
     return render_response(request, 'plugin-submit.html', dict)
 
+@login_required
+def upload_plugin_version(request, plugin_id=None):
+    dict = {}
+
+    # validate plugin/user
+    plugin = get_object_or_404(Plugin, id=plugin_id)
+    if request.user != plugin.user:
+        redirect('auth_login')
+
+    form = PluginUploadForm(request.POST or None, request.FILES or None)
+
+    if request.method == 'POST':
+        if form.is_valid():
+            upload = form.save(commit=False)
+            upload.plugin = plugin
+            upload.save()
+            messages.info(request, u'Plugin correctly uploaded, little dragon.')
+
+            return redirect('plugins')
+        else:
+            messages.error(
+                    request,
+                    u'Something went wrong in your submit. Please, check it.')
+
+    dict['form'] = form
+    dict['plugin'] = plugin
+    return render_response(request, 'plugin-upload.html', dict)
 
 @login_required
 def rate_plugin(request):
@@ -81,7 +114,7 @@ def rate_plugin(request):
         # plugin voted
         plugin = Plugin.objects.get(id=plugin_id)
         # the actual vote
-        
+
         try:
             # if remote client is behind a proxy
             voter_ip = request.META['HTTP_X_FORWARDED_FOR'][0]

@@ -82,12 +82,13 @@ def community(request):
     plugins = []
 
     for plugin in plugins_list:
+        latest = plugin.latest_version()
         plugin_data = {}
         plugin_data['name'] = plugin.name
         plugin_data['description'] = plugin.description
-        plugin_data['version'] = "0.1"
+        plugin_data['version'] = latest.version
 
-        plugin_data['download'] = plugin.zip_file.url
+        plugin_data['download'] = latest.zip_file.url
         plugin_data['home'] = plugin.get_absolute_url()
         plugin_data['authors'] = plugin.user.username
 
@@ -97,8 +98,8 @@ def community(request):
 
 
 def updates(request):
-    """ Just returns a simple json formatted file telling the 
-        actual and stable ninja-ide version. 
+    """ Just returns a simple json formatted file telling the
+        actual and stable ninja-ide version.
     """
     return render_response(request, 'updates_simple.html')
 

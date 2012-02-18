@@ -46,7 +46,9 @@
       </div>
 
       <p>{{ plugin.description }}</p>
-
+      <p>Latest version: {{ plugin.latest_version.version }}</p>
+      <h4>VERSION CHANGELOG</h4>
+      <p>{{ plugin.latest_version.changelog|linebreaksbr }}</p>
     </div>
 
     <div class="section right small-width" id="rating">
@@ -65,7 +67,7 @@
         </div><!-- /rate-container -->
 
         <div class="download-container">
-          <a class="button" href="{{ plugin.zip_file.url }}">Download it!</a>
+          <a class="button" href="{{ plugin.latest_download.zip_file.url }}">Download it!</a>
         </div><!-- /rate-container -->
 
       </div><!-- /options -->

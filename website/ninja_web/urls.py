@@ -43,6 +43,8 @@ urlpatterns = patterns('',
     url(r'^plugins/community', views.community),
     url(r'^plugins/submit/$', plugin_views.plugin_submit, name="plugin_submit"),
     url(r'^plugins/(?P<plugin_id>\d+)/$', plugin_views.plugin, name="plugin_detail"),
+    url(r'^plugins/(?P<plugin_id>\d+)/upload/$',
+        plugin_views.upload_plugin_version, name="plugin_update"),
     url(r'^plugins/$', plugin_views.plugins, name="plugins"),
 
     url(r'^tags/(?P<tag_id>\d+)', plugin_views.filter_by_tag, name="filter_by_tag"),
